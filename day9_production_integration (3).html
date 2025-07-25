@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 9: Final Production & Integration - The Home Stretch!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .presentation-container {
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            height: 100vh;
+            padding: 40px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            flex-direction: column;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .slide h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #4ecdc4;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .slide h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #ffe066;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .slide p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .slide ul {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            text-align: left;
+            max-width: 800px;
+            animation: fadeInUp 1s ease-out 0.8s both;
+        }
+
+        .slide li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .slide li:before {
+            content: "🎬";
+            position: absolute;
+            left: 0;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .slide-grid {
+            display: grid;
+            grid-template-columns: repeat(14, 1fr);
+            gap: 6px;
+            max-width: 560px;
+            margin: 0;
+        }
+
+        .slide-dot {
+            width: 40px;
+            height: 30px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .slide-dot:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .slide-dot.active {
+            background: rgba(78,205,196,0.4);
+            border-color: rgba(78,205,196,0.6);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .time-indicator {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .morning-box {
+            background: rgba(78,205,196,0.1);
+            border: 2px solid rgba(78,205,196,0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 1s ease-out 1s both;
+        }
+
+        .afternoon-box {
+            background: linear-gradient(45deg, rgba(255,224,102,0.1), rgba(255,193,7,0.1));
+            border: 2px solid rgba(255,224,102,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+            animation: fadeInUp 1s ease-out 1.2s both;
+        }
+
+        .activity-box {
+            background: linear-gradient(45deg, rgba(255,107,107,0.1), rgba(255,64,129,0.1));
+            border: 2px solid rgba(255,107,107,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+            animation: fadeInUp 1s ease-out 1.4s both;
+        }
+
+        .workshop-title {
+            background: linear-gradient(45deg, #4ecdc4, #ffe066);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #ffe066);
+            transition: width 0.5s ease;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .timeline-item {
+            text-align: center;
+            flex: 1;
+            padding: 15px;
+        }
+
+        .timeline-arrow {
+            color: #4ecdc4;
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+            animation: fadeInUp 1s ease-out 1.6s both;
+            max-width: 1200px;
+        }
+
+        .checklist-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease;
+            border-left: 5px solid;
+        }
+
+        .checklist-card.visual {
+            border-left-color: #4ecdc4;
+        }
+
+        .checklist-card.audio {
+            border-left-color: #ffe066;
+        }
+
+        .checklist-card.video {
+            border-left-color: #ff6b6b;
+        }
+
+        .checklist-card.integration {
+            border-left-color: #a8e6cf;
+        }
+
+        .checklist-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .status-complete {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .status-progress {
+            color: #ff9800;
+            font-weight: bold;
+        }
+
+        .status-todo {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+            max-width: 1200px;
+        }
+
+        .tool-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease;
+            border-left: 5px solid;
+        }
+
+        .tool-card.ai-powered {
+            border-left-color: #9c27b0;
+        }
+
+        .tool-card.user-friendly {
+            border-left-color: #2196f3;
+        }
+
+        .tool-card.professional {
+            border-left-color: #ff5722;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .demo-code {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            text-align: left;
+            margin: 10px 0;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .folder-structure {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            text-align: left;
+            margin: 15px 0;
+            border-left: 4px solid #ffe066;
+            max-width: 600px;
+        }
+
+        .day-schedule {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 20px 0;
+            max-width: 1000px;
+        }
+
+        .schedule-block {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(78,205,196,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="slide-counter" id="slideCounter">1 / 28</div>
+    <div class="time-indicator" id="timeIndicator">9:00 AM</div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Welcome -->
+        <div class="slide active">
+            <h1>Day 9: The Home Stretch!</h1>
+            <h1 class="workshop-title">Final Production & Integration</h1>
+            <p>From Assets to Masterpiece - Your Cultural Story Comes Together</p>
+            <div class="morning-box">
+                <h3>🎯 Today's Mission</h3>
+                <p>Complete all remaining assets and begin integrating everything into your final cultural multimedia experience!</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: The Journey So Far -->
+        <div class="slide">
+            <h2>Your Creative Journey - 9 Days of Magic!</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>Days 1-2 ✅</h3>
+                    <p><strong>Foundation</strong><br>Vision & Visual Art</p>
+                </div>
+                <div class="timeline-arrow">→</div>
+                <div class="timeline-item">
+                    <h3>Days 3-5 ✅</h3>
+                    <p><strong>Video Magic</strong><br>AI Video Generation</p>
+                </div>
+                <div class="timeline-arrow">→</div>
+                <div class="timeline-item">
+                    <h3>Days 6-8 ✅</h3>
+                    <p><strong>Audio Power</strong><br>Sound & Music Creation</p>
+                </div>
+                <div class="timeline-arrow">→</div>
+                <div class="timeline-item">
+                    <h3>Day 9 🎯</h3>
+                    <p><strong>Integration</strong><br>Everything Together</p>
+                </div>
+            </div>
+            <div class="morning-box">
+                <p><strong>Goal:</strong> By day's end, you'll have a complete multimedia story ready for final polishing!</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Today's Schedule -->
+        <div class="slide">
+            <h2>Today's Power Schedule</h2>
+            <div class="day-schedule">
+                <div class="schedule-block">
+                    <h3>🌅 Morning Session</h3>
+                    <h4>9:00 AM - 12:00 PM</h4>
+                    <ul>
+                        <li><strong>Asset Completion Sprint</strong></li>
+                        <li>Finish any missing videos</li>
+                        <li>Complete audio elements</li>
+                        <li>Organize project files</li>
+                        <li>Quality control check</li>
+                    </ul>
+                </div>
+                <div class="schedule-block">
+                    <h3>🌇 Afternoon Session</h3>
+                    <h4>1:00 PM - 4:30 PM</h4>
+                    <ul>
+                        <li><strong>Integration Workshop</strong></li>
+                        <li>Video editing demonstration</li>
+                        <li>Audio-visual synchronization</li>
+                        <li>Narrative flow creation</li>
+                        <li>Final export preparation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Asset Inventory Checklist -->
+        <div class="slide">
+            <h2>Asset Inventory - What You Should Have</h2>
+            <div class="checklist-grid">
+                <div class="checklist-card visual">
+                    <h3>🎨 Visual Assets</h3>
+                    <ul>
+                        <li><span class="status-complete">✅ Day 2:</span> Generative artwork</li>
+                        <li><span class="status-complete">✅ Cultural patterns</span></li>
+                        <li><span class="status-complete">✅ Flag designs</span></li>
+                        <li><span class="status-complete">✅ Artistic backgrounds</span></li>
+                        <li><span class="status-progress">📝 Status:</span> Should be 100% complete</li>
+                    </ul>
+                </div>
+                <div class="checklist-card video">
+                    <h3>🎬 Video Assets</h3>
+                    <ul>
+                        <li><span class="status-complete">✅ Character references</span></li>
+                        <li><span class="status-progress">⚡ Cultural scenes</span> (5-6 videos)</li>
+                        <li><span class="status-progress">⚡ Landscape shots</span></li>
+                        <li><span class="status-progress">⚡ Traditional practices</span></li>
+                        <li><span class="status-todo">🎯 Status:</span> 80-90% complete</li>
+                    </ul>
+                </div>
+                <div class="checklist-card audio">
+                    <h3>🎵 Audio Assets</h3>
+                    <ul>
+                        <li><span class="status-complete">✅ Steel pan sounds</span></li>
+                        <li><span class="status-complete">✅ Caribbean rhythms</span></li>
+                        <li><span class="status-complete">✅ Ambient soundscapes</span></li>
+                        <li><span class="status-progress">⚡ Cultural melody</span></li>
+                        <li><span class="status-todo">🎯 Status:</span> 90-95% complete</li>
+                    </ul>
+                </div>
+                <div class="checklist-card integration">
+                    <h3>📋 Planning Assets</h3>
+                    <ul>
+                        <li><span class="status-complete">✅ Storyboard outline</span></li>
+                        <li><span class="status-complete">✅ Cultural narrative</span></li>
+                        <li><span class="status-progress">⚡ File organization</span></li>
+                        <li><span class="status-todo">🎯 Integration plan</span></li>
+                        <li><span class="status-todo">🎯 Status:</span> 70% complete</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: File Organization -->
+        <div class="slide">
+            <h2>Professional File Organization</h2>
+            <div class="morning-box">
+                <h3>📁 Your Project Should Look Like This:</h3>
+                <div class="folder-structure">
+My_Cultural_Project/
+├── 01_Visual_Assets/
+│   ├── generative_art/
+│   ├── flag_designs/
+│   └── cultural_patterns/
+├── 02_Video_Assets/
+│   ├── character_references/
+│   ├── cultural_scenes/
+│   └── landscape_shots/
+├── 03_Audio_Assets/
+│   ├── music_tracks/
+│   ├── sound_effects/
+│   └── ambient_sounds/
+├── 04_Final_Exports/
+│   ├── web_versions/
+│   └── presentation_ready/
+└── 05_Project_Documents/
+    ├── storyboard.pdf
+    └── cultural_research.txt
+                </div>
+            </div>
+            <div class="activity-box">
+                <h3>🗂️ Morning Task: Organization Sprint (20 minutes)</h3>
+                <p>Create this folder structure and move all your files into proper categories. Professional organization = professional results!</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Missing Asset Sprint -->
+        <div class="slide">
+            <h2>Missing Asset Sprint - Fill the Gaps!</h2>
+            <div class="activity-box">
+                <h3>🔍 Quick Assessment (10 minutes)</h3>
+                <p><strong>Check your folders and identify what's missing:</strong></p>
+                <ul>
+                    <li><strong>Videos:</strong> Do you have 5-6 cultural scene videos?</li>
+                    <li><strong>Audio:</strong> Is your cultural melody complete?</li>
+                    <li><strong>Narrative:</strong> Does your story flow from beginning to end?</li>
+                    <li><strong>Characters:</strong> Are all character references consistent?</li>
+                </ul>
+            </div>
+            <div class="morning-box">
+                <h3>⚡ Sprint Priorities (90 minutes)</h3>
+                <ul>
+                    <li><strong>Critical:</strong> Complete 5-6 core story videos</li>
+                    <li><strong>Important:</strong> Finalize cultural audio melody</li>
+                    <li><strong>Nice to Have:</strong> Additional atmospheric elements</li>
+                    <li><strong>Polish:</strong> Consistent character appearance across scenes</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: Video Production Priority List -->
+        <div class="slide">
+            <h2>Video Production Priority List</h2>
+            <div class="checklist-grid">
+                <div class="checklist-card video">
+                    <h3>🎬 Must-Have Videos</h3>
+                    <ul>
+                        <li>Opening scene (sets the cultural context)</li>
+                        <li>Character introduction</li>
+                        <li>Traditional practice demonstration</li>
+                        <li>Landscape/setting establishment</li>
+                        <li>Cultural symbol or artifact</li>
+                        <li>Closing scene (modern connection)</li>
+                    </ul>
+                </div>
+                <div class="checklist-card video">
+                    <h3>⚡ Nice-to-Have Videos</h3>
+                    <ul>
+                        <li>Additional character angles</li>
+                        <li>Transition scenes</li>
+                        <li>Detail shots (close-ups)</li>
+                        <li>Festival or celebration</li>
+                        <li>Natural wildlife</li>
+                        <li>Food or craft traditions</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="morning-box">
+                <h3>🎯 Production Strategy</h3>
+                <p><strong>Focus on quality over quantity:</strong> 5-6 excellent videos tell a better story than 10 mediocre ones. Use consistent prompts for character continuity!</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Audio Completion Checklist -->
+        <div class="slide">
+            <h2>Audio Completion Checklist</h2>
+            <div class="afternoon-box">
+                <h3>🎵 Essential Audio Elements</h3>
+                <ul>
+                    <li><strong>✅ Background Rhythm:</strong> Caribbean beat (you have this)</li>
+                    <li><strong>✅ Ambient Soundscape:</strong> Ocean, birds, wind (you have this)</li>
+                    <li><strong>⚡ Cultural Melody:</strong> National anthem or traditional tune</li>
+                    <li><strong>⚡ Transition Sounds:</strong> Audio bridges between scenes</li>
+                    <li><strong>🎯 Master Mix:</strong> Everything balanced together</li>
+                </ul>
+            </div>
+            <div class="activity-box">
+                <h3>🎧 Audio Sprint Tasks (30 minutes)</h3>
+                <ul>
+                    <li>Complete your cultural melody (use Day 6 template)</li>
+                    <li>Create 2-3 short transition sounds</li>
+                    <li>Mix everything into a master audio track</li>
+                    <li>Export in multiple formats (WAV, MP3)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 9: Break Time -->
+        <div class="slide">
+            <h2>☕ Production Break!</h2>
+            <div class="activity-box">
+                <h3>15 Minutes to Recharge</h3>
+                <p>Take a break from creating and review what you've accomplished this morning!</p>
+            </div>
+            <p><strong>When we return:</strong> Quality control and file organization</p>
+        </div>
+
+        <!-- Slide 10: Quality Control Workshop -->
+        <div class="slide">
+            <h2>Quality Control Workshop</h2>
+            <div class="morning-box">
+                <h3>🔍 Professional Quality Checklist</h3>
+                <ul>
+                    <li><strong>Character Consistency:</strong> Does your main character look the same across videos?</li>
+                    <li><strong>Audio Quality:</strong> Are all sounds clear and balanced?</li>
+                    <li><strong>Visual Cohesion:</strong> Do colors and styles work together?</li>
+                    <li><strong>Cultural Accuracy:</strong> Is your heritage respectfully represented?</li>
+                    <li><strong>Story Flow:</strong> Does your narrative have beginning, middle, end?</li>
+                    <li><strong>Technical Standards:</strong> Are files properly named and organized?</li>
+                </ul>
+            </div>
+            <div class="activity-box">
+                <h3>🎯 Peer Review Session (20 minutes)</h3>
+                <p>Partner with a classmate and review each other's assets using the checklist above!</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Lunch Break -->
+        <div class="slide">
+            <h2>🍽️ Lunch Break</h2>
+            <div class="activity-box">
+                <h3>1 Hour to Refuel</h3>
+                <p>Rest up for the afternoon integration workshop!</p>
+            </div>
+            <p><strong>When we return:</strong> Video editing and final integration</p>
+        </div>
+
+        <!-- Slide 12: Afternoon Integration Workshop -->
+        <div class="slide">
+            <h2>Afternoon: Integration Workshop</h2>
+            <div class="workshop-title">From Assets to Masterpiece</div>
+            <div class="afternoon-box">
+                <h3>🎬 This Afternoon's Journey</h3>
+                <ul>
+                    <li><strong>Video Editing Tools:</strong> Learn the best platforms for beginners</li>
+                    <li><strong>Hands-On Demo:</strong> Filmora editing demonstration</li>
+                    <li><strong>Audio-Visual Sync:</strong> Making sound and picture work together</li>
+                    <li><strong>Narrative Flow:</strong> Telling your cultural story effectively</li>
+                    <li><strong>Export Strategy:</strong> Creating multiple versions for different uses</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 13: Video Editing Tool Showcase -->
+        <div class="slide">
+            <h2>Video Editing Tools - Your Options</h2>
+            <div class="tool-grid">
+                <div class="tool-card ai-powered">
+                    <h3>🤖 AI-Powered (Recommended)</h3>
+                    <p><strong>RunwayML Video Editor</strong><br>AI-assisted editing, automatic transitions</p>
+                    <p><strong>Kapwing</strong><br>AI templates, simple interface, perfect for beginners</p>
+                    <p><strong>InVideo</strong><br>AI-powered templates and smart editing</p>
+                </div>
+                <div class="tool-card user-friendly">
+                    <h3>😊 User-Friendly</h3>
+                    <p><strong>CapCut (Free)</strong><br>TikTok's editor, very intuitive mobile/desktop</p>
+                    <p><strong>Clideo</strong><br>Browser-based, no download required</p>
+                    <p><strong>Canva Video</strong><br>Template-based, great for beginners</p>
+                </div>
+                <div class="tool-card professional">
+                    <h3>🎬 Professional</h3>
+                    <p><strong>Filmora (Demo Today)</strong><br>Professional features, student-friendly</p>
+                    <p><strong>DaVinci Resolve (Free)</strong><br>Hollywood-grade, steep learning curve</p>
+                    <p><strong>OpenShot (Free)</strong><br>Open source, good for basic editing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: AI-Powered Editing Advantages -->
+        <div class="slide">
+            <h2>Why AI-Powered Editing is Perfect for You</h2>
+            <div class="morning-box">
+                <h3>🤖 AI Editing Superpowers</h3>
+                <ul>
+                    <li><strong>Automatic Transitions:</strong> AI creates smooth scene changes</li>
+                    <li><strong>Audio Sync:</strong> Automatically matches music to video beats</li>
+                    <li><strong>Style Templates:</strong> Professional looks with one click</li>
+                    <li><strong>Smart Cropping:</strong> AI adjusts video sizes automatically</li>
+                    <li><strong>Color Correction:</strong> AI balances colors across scenes</li>
+                    <li><strong>Text Generation:</strong> AI suggests titles and captions</li>
+                </ul>
+            </div>
+            <div class="afternoon-box">
+                <h3>📱 Recommended Workflow</h3>
+                <p><strong>1. Try Kapwing first</strong> (easiest AI editing)<br>
+                <strong>2. Use CapCut for mobile</strong> (if you prefer phone editing)<br>
+                <strong>3. Watch Filmora demo</strong> (for advanced features)<br>
+                <strong>4. Export multiple versions</strong> (social media, presentation, web)</p>
+            </div>
+        </div>
+
+        <!-- Slide 15: Kapwing AI Editing Walkthrough -->
+        <div class="slide">
+            <h2>Kapwing AI Editing - Step by Step</h2>
+            <div class="activity-box">
+                <h3>🎬 Kapwing Workflow (30 minutes hands-on)</h3>
+                <ol style="text-align: left; max-width: 700px;">
+                    <li><strong>Upload Assets:</strong> Drag your videos, audio, images to Kapwing</li>
+                    <li><strong>Choose Template:</strong> Select "Cultural Story" or "Documentary" style</li>
+                    <li><strong>Arrange Timeline:</strong> Drop videos in story order</li>
+                    <li><strong>Add Audio:</strong> Layer your Caribbean music underneath</li>
+                    <li><strong>AI Auto-Edit:</strong> Let AI suggest transitions and timing</li>
+                    <li><strong>Add Titles:</strong> Use AI text generation for scene titles</li>
+                    <li><strong>Preview & Adjust:</strong> Fine-tune the AI suggestions</li>
+                    <li><strong>Export:</strong> Download in multiple formats</li>
+                </ol>
+            </div>
+            <div class="morning-box">
+                <h3>💡 Kapwing Pro Tips</h3>
+                <ul>
+                    <li>Use the "Magic Resize" feature for different aspect ratios</li>
+                    <li>Try the "Smart Cut" to automatically remove silent parts</li>
+                    <li>Use "Auto-subtitles" for accessibility</li>
+                    <li>Apply the "Documentary" filter for professional look</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 16: Filmora Demonstration Setup -->
+        <div class="slide">
+            <h2>Filmora Live Demonstration</h2>
+            <div class="activity-box">
+                <h3>🎥 What You'll Learn in the Demo</h3>
+                <ul>
+                    <li><strong>Project Setup:</strong> Importing and organizing media</li>
+                    <li><strong>Timeline Basics:</strong> Arranging video and audio tracks</li>
+                    <li><strong>Transitions:</strong> Smooth scene changes</li>
+                    <li><strong>Audio Sync:</strong> Matching music to video rhythm</li>
+                    <li><strong>Color Grading:</strong> Making videos look cohesive</li>
+                    <li><strong>Title Cards:</strong> Professional text overlays</li>
+                    <li><strong>Export Settings:</strong> Multiple format outputs</li>
+                </ul>
+            </div>
+            <div class="afternoon-box">
+                <h3>👀 Focus Areas During Demo</h3>
+                <p>Pay special attention to how we sync Caribbean music with video beats and create smooth transitions between cultural scenes!</p>
+            </div>
+        </div>
+
+        <!-- Slide 17: Audio-Visual Synchronization -->
+        <div class="slide">
+            <h2>Audio-Visual Synchronization Magic</h2>
+            <div class="morning-box">
+                <h3>🎵 Sync Strategies for Cultural Content</h3>
+                <ul>
+                    <li><strong>Beat Matching:</strong> Cut videos on musical beats</li>
+                    <li><strong>Emotional Sync:</strong> Match audio mood to visual content</li>
+                    <li><strong>Cultural Rhythm:</strong> Use Caribbean musical patterns to guide editing</li>
+                    <li><strong>Natural Flow:</strong> Let ambient sounds bridge between scenes</li>
+                    <li><strong>Dynamic Range:</strong> Vary volume for dramatic effect</li>
+                </ul>
+            </div>
+            <div class="demo-code">
+Basic Sync Pattern:
+• Scene 1: Gentle intro music with landscape
+• Scene 2: Add percussion with character introduction  
+• Scene 3: Full rhythm with traditional practice
+• Scene 4: Ambient sounds with cultural symbols
+• Scene 5: Crescendo with modern connection
+• Scene 6: Gentle outro with reflection
+            </div>
+        </div>
+
+        <!-- Slide 18: Narrative Flow Workshop -->
+        <div class="slide">
+            <h2>Narrative Flow Workshop</h2>
+            <div class="checklist-grid">
+                <div class="checklist-card visual">
+                    <h3>📖 Story Structure</h3>
+                    <ul>
+                        <li><strong>Opening:</strong> Establish setting and culture</li>
+                        <li><strong>Introduction:</strong> Meet your main character</li>
+                        <li><strong>Development:</strong> Show traditions and practices</li>
+                        <li><strong>Climax:</strong> Cultural celebration or significance</li>
+                        <li><strong>Resolution:</strong> Modern connection and meaning</li>
+                        <li><strong>Conclusion:</strong> Lasting impact and reflection</li>
+                    </ul>
+                </div>
+                <div class="checklist-card audio">
+                    <h3>🎼 Musical Journey</h3>
+                    <ul>
+                        <li><strong>Intro:</strong> Ambient sounds, building anticipation</li>
+                        <li><strong>Build:</strong> Add rhythm and cultural instruments</li>
+                        <li><strong>Develop:</strong> Full musical richness</li>
+                        <li><strong>Peak:</strong> Cultural melody or anthem</li>
+                        <li><strong>Resolve:</strong> Return to peaceful ambience</li>
+                        <li><strong>Outro:</strong> Lasting emotional resonance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Hands-On Editing Session -->
+        <div class="slide">
+            <h2>Hands-On Editing Session</h2>
+            <div class="activity-box">
+                <h3>🎬 Your First Edit (60 minutes)</h3>
+                <p><strong>Choose your editing platform and create a 60-90 second cultural story:</strong></p>
+                <ul>
+                    <li><strong>15 minutes:</strong> Import and organize your assets</li>
+                    <li><strong>20 minutes:</strong> Arrange videos in story order</li>
+                    <li><strong>15 minutes:</strong> Add audio and sync to video</li>
+                    <li><strong>10 minutes:</strong> Add transitions and effects</li>
+                </ul>
+            </div>
+            <div class="morning-box">
+                <h3>🎯 Success Criteria</h3>
+                <ul>
+                    <li>Clear beginning, middle, and end</li>
+                    <li>Audio synced with video content</li>
+                    <li>Smooth transitions between scenes</li>
+                    <li>Cultural story clearly communicated</li>
+                    <li>Professional-looking final product</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 20: Advanced Editing Techniques -->
+        <div class="slide">
+            <h2>Advanced Editing Techniques</h2>
+            <div class="tool-grid">
+                <div class="tool-card ai-powered">
+                    <h3>🎨 Visual Enhancement</h3>
+                    <ul>
+                        <li>Color grading for consistent mood</li>
+                        <li>Split-screen for comparisons</li>
+                        <li>Picture-in-picture effects</li>
+                        <li>Slow motion for dramatic moments</li>
+                        <li>Zoom and pan for emphasis</li>
+                    </ul>
+                </div>
+                <div class="tool-card user-friendly">
+                    <h3>🎵 Audio Mastery</h3>
+                    <ul>
+                        <li>Audio ducking (lowering music for voice)</li>
+                        <li>Crossfades between audio tracks</li>
+                        <li>Echo and reverb for atmosphere</li>
+                        <li>Volume automation for dynamics</li>
+                        <li>Sound effect placement</li>
+                    </ul>
+                </div>
+                <div class="tool-card professional">
+                    <h3>✨ Professional Polish</h3>
+                    <ul>
+                        <li>Title animations and lower thirds</li>
+                        <li>Custom transition creation</li>
+                        <li>Motion graphics integration</li>
+                        <li>Multi-layer compositions</li>
+                        <li>Export optimization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Export Strategy Workshop -->
+        <div class="slide">
+            <h2>Export Strategy - Multiple Versions</h2>
+            <div class="checklist-grid">
+                <div class="checklist-card video">
+                    <h3>📱 Social Media Version</h3>
+                    <ul>
+                        <li><strong>Format:</strong> MP4, 1080p</li>
+                        <li><strong>Aspect Ratio:</strong> 9:16 (vertical) or 1:1 (square)</li>
+                        <li><strong>Duration:</strong> 30-60 seconds</li>
+                        <li><strong>Audio:</strong> Optimized for mobile speakers</li>
+                        <li><strong>Captions:</strong> Always include for accessibility</li>
+                    </ul>
+                </div>
+                <div class="checklist-card integration">
+                    <h3>💻 Presentation Version</h3>
+                    <ul>
+                        <li><strong>Format:</strong> MP4, 1080p or 4K</li>
+                        <li><strong>Aspect Ratio:</strong> 16:9 (widescreen)</li>
+                        <li><strong>Duration:</strong> 90-120 seconds</li>
+                        <li><strong>Audio:</strong> Full dynamic range</li>
+                        <li><strong>Quality:</strong> Maximum for projection</li>
+                    </ul>
+                </div>
+                <div class="checklist-card visual">
+                    <h3>🌐 Web Version</h3>
+                    <ul>
+                        <li><strong>Format:</strong> MP4, optimized for streaming</li>
+                        <li><strong>File Size:</strong> Under 50MB for fast loading</li>
+                        <li><strong>Quality:</strong> Balanced quality vs. size</li>
+                        <li><strong>Compatibility:</strong> Works on all browsers</li>
+                        <li><strong>Backup:</strong> Also create GIF version</li>
+                    </ul>
+                </div>
+                <div class="checklist-card audio">
+                    <h3>🎧 Portfolio Version</h3>
+                    <ul>
+                        <li><strong>Format:</strong> MP4, highest quality</li>
+                        <li><strong>Duration:</strong> Full story (2-3 minutes)</li>
+                        <li><strong>Audio:</strong> Professional mix</li>
+                        <li><strong>Extras:</strong> Behind-the-scenes clips</li>
+                        <li><strong>Documentation:</strong> Process explanation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Troubleshooting Common Issues -->
+        <div class="slide">
+            <h2>Troubleshooting Common Issues</h2>
+            <div class="morning-box">
+                <h3>🔧 Quick Fixes for Common Problems</h3>
+                <ul>
+                    <li><strong>Audio out of sync:</strong> Manually align audio waveforms with video</li>
+                    <li><strong>Video quality loss:</strong> Check export settings, use higher bitrate</li>
+                    <li><strong>Choppy playback:</strong> Lower preview quality during editing</li>
+                    <li><strong>Large file sizes:</strong> Compress video or reduce resolution</li>
+                    <li><strong>Color mismatch:</strong> Apply same color filter to all clips</li>
+                    <li><strong>Harsh transitions:</strong> Add crossfade or motion blur</li>
+                </ul>
+            </div>
+            <div class="activity-box">
+                <h3>🆘 Getting Help</h3>
+                <p>If you encounter issues, ask a classmate first, then flag an instructor. Most editing problems have simple solutions!</p>
+            </div>
+        </div>
+
+        <!-- Slide 23: Peer Collaboration Session -->
+        <div class="slide">
+            <h2>Peer Collaboration Session</h2>
+            <div class="activity-box">
+                <h3>🤝 Collaborative Editing (30 minutes)</h3>
+                <p><strong>Partner up and help each other:</strong></p>
+                <ul>
+                    <li><strong>Share screens:</strong> Show your editing progress</li>
+                    <li><strong>Get feedback:</strong> Does your story make sense?</li>
+                    <li><strong>Solve problems:</strong> Two minds are better than one</li>
+                    <li><strong>Learn techniques:</strong> See how others approach editing</li>
+                    <li><strong>Cultural exchange:</strong> Appreciate different heritage stories</li>
+                </ul>
+            </div>
+            <div class="afternoon-box">
+                <h3>💬 Feedback Focus Areas</h3>
+                <ul>
+                    <li>Is the cultural story clear and respectful?</li>
+                    <li>Do the audio and visuals work well together?</li>
+                    <li>Are transitions smooth and professional?</li>
+                    <li>What's the most engaging part of the story?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 24: Final Production Sprint -->
+        <div class="slide">
+            <h2>Final Production Sprint</h2>
+            <div class="activity-box">
+                <h3>🚀 Complete Your Masterpiece (45 minutes)</h3>
+                <p><strong>Sprint Goals:</strong></p>
+                <ul>
+                    <li><strong>Finalize edit:</strong> Implement feedback and polish rough areas</li>
+                    <li><strong>Audio balance:</strong> Ensure all audio levels are professional</li>
+                    <li><strong>Export versions:</strong> Create at least 2 different formats</li>
+                    <li><strong>Quality check:</strong> Watch your complete video start to finish</li>
+                    <li><strong>File organization:</strong> Save everything in proper folders</li>
+                </ul>
+            </div>
+            <div class="morning-box">
+                <h3>✅ Completion Checklist</h3>
+                <ul>
+                    <li>Cultural story has clear narrative arc</li>
+                    <li>Audio and video are synchronized</li>
+                    <li>All transitions are smooth</li>
+                    <li>No technical glitches or errors</li>
+                    <li>Multiple export formats completed</li>
+                    <li>Files properly named and organized</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 25: Showcase Preparation -->
+        <div class="slide">
+            <h2>Showcase Preparation</h2>
+            <div class="afternoon-box">
+                <h3>🎭 Preparing for Tomorrow's Final Showcase</h3>
+                <ul>
+                    <li><strong>Video Ready:</strong> 90-second presentation version</li>
+                    <li><strong>Story Prep:</strong> 2-minute explanation of your cultural journey</li>
+                    <li><strong>Process Documentation:</strong> Before/after comparisons</li>
+                    <li><strong>Technical Setup:</strong> Test all files play correctly</li>
+                    <li><strong>Confidence Building:</strong> Practice your presentation</li>
+                </ul>
+            </div>
+            <div class="activity-box">
+                <h3>📝 Presentation Planning</h3>
+                <p><strong>Prepare to share:</strong></p>
+                <ul>
+                    <li>What cultural story you chose and why</li>
+                    <li>Your favorite technical achievement</li>
+                    <li>The biggest challenge you overcame</li>
+                    <li>How this project represents your heritage</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 26: Skills Mastered Today -->
+        <div class="slide">
+            <h2>Skills Mastered Today</h2>
+            <div class="checklist-grid">
+                <div class="checklist-card visual">
+                    <h3>🎬 Video Production</h3>
+                    <ul>
+                        <li>Professional editing workflows</li>
+                        <li>Multi-platform tool mastery</li>
+                        <li>Audio-visual synchronization</li>
+                        <li>Narrative story structure</li>
+                        <li>Export optimization</li>
+                    </ul>
+                </div>
+                <div class="checklist-card audio">
+                    <h3>🎵 Audio Integration</h3>
+                    <ul>
+                        <li>Music and video sync</li>
+                        <li>Dynamic audio mixing</li>
+                        <li>Cultural sound design</li>
+                        <li>Professional audio balance</li>
+                        <li>Multiple format export</li>
+                    </ul>
+                </div>
+                <div class="checklist-card integration">
+                    <h3>📋 Project Management</h3>
+                    <ul>
+                        <li>Asset organization systems</li>
+                        <li>Quality control processes</li>
+                        <li>Collaborative workflows</li>
+                        <li>Professional documentation</li>
+                        <li>Multi-version delivery</li>
+                    </ul>
+                </div>
+                <div class="checklist-card video">
+                    <h3>🌍 Cultural Storytelling</h3>
+                    <ul>
+                        <li>Heritage representation</li>
+                        <li>Authentic narrative creation</li>
+                        <li>Cross-cultural appreciation</li>
+                        <li>Digital preservation skills</li>
+                        <li>Modern relevance connection</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 27: Tomorrow's Final Showcase -->
+        <div class="slide">
+            <h2>Tomorrow: Final Showcase & Celebration</h2>
+            <div class="morning-box">
+                <h3>🎯 Day 10: Grand Finale</h3>
+                <ul>
+                    <li><strong>Morning:</strong> Final polish and technical setup</li>
+                    <li><strong>Midday:</strong> Cultural multimedia showcase presentations</li>
+                    <li><strong>Afternoon:</strong> Celebration, reflection, and portfolio completion</li>
+                    <li><strong>Closing:</strong> Certificate ceremony and cultural exchange</li>
+                </ul>
+            </div>
+            <div class="afternoon-box">
+                <h3>🏆 What You're Presenting</h3>
+                <ul>
+                    <li>Complete cultural multimedia experience</li>
+                    <li>Technical journey and skills gained</li>
+                    <li>Cultural heritage celebration</li>
+                    <li>Creative process documentation</li>
+                    <li>Future applications and dreams</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 28: Journey Complete -->
+        <div class="slide">
+            <h2>Day 9 Complete: Ready for the Finale!</h2>
+            <div class="workshop-title">From Concept to Masterpiece</div>
+            <div class="morning-box">
+                <h3>🏆 What You've Accomplished Today</h3>
+                <ul>
+                    <li>Completed all remaining multimedia assets</li>
+                    <li>Mastered professional video editing workflows</li>
+                    <li>Integrated audio and visual elements seamlessly</li>
+                    <li>Created multiple export versions for different uses</li>
+                    <li>Developed professional project management skills</li>
+                    <li>Prepared a showcase-ready cultural masterpiece</li>
+                </ul>
+            </div>
+            <div class="afternoon-box">
+                <p><strong>Tomorrow:</strong> You'll present your complete cultural multimedia experience to celebrate the fusion of technology and heritage. Your journey from beginner to digital storyteller ends with a showcase that honors your cultural roots while demonstrating cutting-edge creative skills! 🎬✨🌺</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <div class="nav-controls">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+        <div class="slide-grid">
+            <div class="slide-dot active" onclick="goToSlide(0)" title="Welcome">1</div>
+            <div class="slide-dot" onclick="goToSlide(1)" title="Journey">2</div>
+            <div class="slide-dot" onclick="goToSlide(2)" title="Schedule">3</div>
+            <div class="slide-dot" onclick="goToSlide(3)" title="Inventory">4</div>
+            <div class="slide-dot" onclick="goToSlide(4)" title="Organization">5</div>
+            <div class="slide-dot" onclick="goToSlide(5)" title="Sprint">6</div>
+            <div class="slide-dot" onclick="goToSlide(6)" title="Video Priority">7</div>
+            <div class="slide-dot" onclick="goToSlide(7)" title="Audio Completion">8</div>
+            <div class="slide-dot" onclick="goToSlide(8)" title="Break">9</div>
+            <div class="slide-dot" onclick="goToSlide(9)" title="Quality Control">10</div>
+            <div class="slide-dot" onclick="goToSlide(10)" title="Lunch">11</div>
+            <div class="slide-dot" onclick="goToSlide(11)" title="Integration">12</div>
+            <div class="slide-dot" onclick="goToSlide(12)" title="Tools">13</div>
+            <div class="slide-dot" onclick="goToSlide(13)" title="AI Advantages">14</div>
+            <div class="slide-dot" onclick="goToSlide(14)" title="Kapwing">15</div>
+            <div class="slide-dot" onclick="goToSlide(15)" title="Filmora Demo">16</div>
+            <div class="slide-dot" onclick="goToSlide(16)" title="Audio Sync">17</div>
+            <div class="slide-dot" onclick="goToSlide(17)" title="Narrative">18</div>
+            <div class="slide-dot" onclick="goToSlide(18)" title="Hands-On">19</div>
+            <div class="slide-dot" onclick="goToSlide(19)" title="Advanced">20</div>
+            <div class="slide-dot" onclick="goToSlide(20)" title="Export">21</div>
+            <div class="slide-dot" onclick="goToSlide(21)" title="Troubleshoot">22</div>
+            <div class="slide-dot" onclick="goToSlide(22)" title="Collaboration">23</div>
+            <div class="slide-dot" onclick="goToSlide(23)" title="Final Sprint">24</div>
+            <div class="slide-dot" onclick="goToSlide(24)" title="Showcase Prep">25</div>
+            <div class="slide-dot" onclick="goToSlide(25)" title="Skills">26</div>
+            <div class="slide-dot" onclick="goToSlide(26)" title="Tomorrow">27</div>
+            <div class="slide-dot" onclick="goToSlide(27)" title="Complete">28</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 28;
+
+        const timeSchedule = [
+            "9:00 AM", "9:10 AM", "9:20 AM", "9:30 AM", "9:45 AM", "10:00 AM", "10:15 AM", 
+            "10:30 AM", "10:45 AM", "11:00 AM", "11:15 AM", "12:00 PM", "1:00 PM", "1:15 PM",
+            "1:30 PM", "1:45 PM", "2:00 PM", "2:15 PM", "2:30 PM", "2:45 PM", "3:00 PM", 
+            "3:15 PM", "3:30 PM", "3:45 PM", "4:00 PM", "4:15 PM", "4:20 PM", "4:30 PM"
+        ];
+
+        function updateSlideDisplay() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.slide-dot');
+            
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+            
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+            
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            document.getElementById('timeIndicator').textContent = timeSchedule[currentSlide] || "4:30 PM";
+            
+            const progressPercentage = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressFill').style.width = `${progressPercentage}%`;
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                updateSlideDisplay();
+            }
+        }
+
+        function goToSlide(slideIndex) {
+            if (slideIndex >= 0 && slideIndex < totalSlides) {
+                currentSlide = slideIndex;
+                updateSlideDisplay();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            switch(event.key) {
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                    changeSlide(-1);
+                    break;
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case ' ':
+                    event.preventDefault();
+                    changeSlide(1);
+                    break;
+                case 'Home':
+                    goToSlide(0);
+                    break;
+                case 'End':
+                    goToSlide(totalSlides - 1);
+                    break;
+            }
+        });
+
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(event) {
+            touchStartX = event.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(event) {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                changeSlide(1); // Swipe left - next slide
+            }
+            if (touchEndX > touchStartX + 50) {
+                changeSlide(-1); // Swipe right - previous slide
+            }
+        }
+
+        // Initialize
+        updateSlideDisplay();
+    </script>
+</body>
+</html>
